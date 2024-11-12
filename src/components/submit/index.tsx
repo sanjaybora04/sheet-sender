@@ -28,7 +28,7 @@ export default function Submit({ table }: { table: Table<any> }){
             break;
         case 3:
             if(method.methodType=='email'){
-                stepComponent= <SendEmail/>
+                stepComponent= <SendEmail recipients={table.getSelectedRowModel().rows.map(row=>row.original[column])}/>
             }else{
                 stepComponent= <SendWhatsapp numbers={table.getSelectedRowModel().rows.map(row=>row.original[column])}/>
             }

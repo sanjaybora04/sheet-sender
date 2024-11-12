@@ -14,6 +14,7 @@ import axios from "axios";
 import { DialogHeader, DialogTitle } from "../ui/dialog";
 import { useAtomValue, useSetAtom } from "jotai";
 import { methodAtom, stepAtom } from ".";
+import { toast } from "sonner";
 
 
 const formSchema = z.object({
@@ -87,96 +88,97 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
 
     }
 
-    async function sendMessage(data: formType, number: string) {
+    // async function sendMessage(data: formType, number: string) {
 
-        let query: any = {
-            messaging_product: "whatsapp",
-            to: `91${number}`,
-            type: "template",
-            template: {
-                name: `${data.header}_text1${data.text1 && data.text2 ? '_text2' : ''}${data.text1 && data.text2 && data.text3 ? '_text3' : ''}`,
-                language: {
-                    code: "en"
-                },
-            }
-        }
+    //     let query: any = {
+    //         messaging_product: "whatsapp",
+    //         to: `91${number}`,
+    //         type: "template",
+    //         template: {
+    //             name: `${data.header}_text1${data.text1 && data.text2 ? '_text2' : ''}${data.text1 && data.text2 && data.text3 ? '_text3' : ''}`,
+    //             language: {
+    //                 code: "en"
+    //             },
+    //         }
+    //     }
 
-        let headerParameters
-        let bodyParameters = [
-            {
-                type: "text",
-                text: data.text1
-            }
-        ]
+    //     let headerParameters
+    //     let bodyParameters = [
+    //         {
+    //             type: "text",
+    //             text: data.text1
+    //         }
+    //     ]
 
-        // Conditionally update the header
-        if (data.header === 'image') {
-            headerParameters = [
-                {
-                    type: "image",  // Set the type to 'image'
-                    image: {
-                        id: data.image  // Add the image link from data.image
-                    }
-                }
-            ];
-        } else if (data.header === 'text') {
-            headerParameters = [
-                {
-                    type: "text",  // Set the type to 'text'
-                    text: data.text  // Add the text from data.text
-                }
-            ];
-        }
+    //     // Conditionally update the header
+    //     if (data.header === 'image') {
+    //         headerParameters = [
+    //             {
+    //                 type: "image",  // Set the type to 'image'
+    //                 image: {
+    //                     id: data.image  // Add the image link from data.image
+    //                 }
+    //             }
+    //         ];
+    //     } else if (data.header === 'text') {
+    //         headerParameters = [
+    //             {
+    //                 type: "text",  // Set the type to 'text'
+    //                 text: data.text  // Add the text from data.text
+    //             }
+    //         ];
+    //     }
 
-        // conditionally add text2 and text3
-        if (data.text2) {
-            bodyParameters.push({
-                type: "text",
-                text: data.text2
-            });
-        }
-        if (data.text3) {
-            bodyParameters.push({
-                type: "text",
-                text: data.text3
-            });
-        }
+    //     // conditionally add text2 and text3
+    //     if (data.text2) {
+    //         bodyParameters.push({
+    //             type: "text",
+    //             text: data.text2
+    //         });
+    //     }
+    //     if (data.text3) {
+    //         bodyParameters.push({
+    //             type: "text",
+    //             text: data.text3
+    //         });
+    //     }
 
-        query.template.components = [
-            {
-                type: "header",
-                parameters: headerParameters
-            },
-            {
-                type: "body",
-                parameters: bodyParameters
-            }
-        ]
+    //     query.template.components = [
+    //         {
+    //             type: "header",
+    //             parameters: headerParameters
+    //         },
+    //         {
+    //             type: "body",
+    //             parameters: bodyParameters
+    //         }
+    //     ]
 
-        const res = await axios.post(`https://graph.facebook.com/v21.0/${method.numberId}/messages`,
-            query,
-            {
-                headers: {
-                    Authorization: `Bearer ${method.token}`
-                }
-            }
-        )
-        if (res.status == 200) {
-            console.log('Message Sent')
-        }
-        else {
-            throw res
-        }
-        return
-    }
-
-    // async function sendTestMessage(data: formType, number: string) {
-    //     await new Promise(resolve => setTimeout(resolve, 5));
-    //     if (Math.random() < 0.1) {
-    //         throw {error: 'Test error'};
+    //     const res = await axios.post(`https://graph.facebook.com/v21.0/${method.numberId}/messages`,
+    //         query,
+    //         {
+    //             headers: {
+    //                 Authorization: `Bearer ${method.token}`
+    //             }
+    //         }
+    //     )
+    //     if (res.status == 200) {
+    //         console.log('Message Sent')
+    //     }
+    //     else {
+    //         throw res
     //     }
     //     return
     // }
+
+    // Send Test Message
+    async function sendMessage(data: formType, number: string) {
+        await new Promise(resolve => setTimeout(resolve, 5));
+        if (Math.random() < 0.1) {
+            throw {error: 'Test error'};
+        }
+        return
+    }
 
     async function onSubmit(data: formType) {
         try {
@@ -204,6 +206,7 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
         }
 
         setProgress(0)
+        toast.success('Operation successfull!!')
     }
 
     function downloadErrorsAsJSON(errors: any[]) {
@@ -231,7 +234,7 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
                     Whatsapp Message
                 </DialogTitle>
             </DialogHeader>
-            {progress > 0 && <ProgressBar progress={progress} numbers={numbers} errors={errors} />}
+            {progress > 0 && <ProgressBar progress={progress} total={numbers.length} errors={errors.length} />}
             <ScrollArea className="max-h-[70vh]">
                 <div className="flex flex-col md:flex-row gap-2">
                     <div className="md:w-1/2">
