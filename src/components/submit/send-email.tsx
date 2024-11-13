@@ -17,7 +17,7 @@ export default function SendEmail({recipients}:{recipients:string[]}) {
     const [subject, setSubject] = useState<any>()
     const [content, setContent] = useState<any>()
 
-    const [progress, setProgress] = useState(0)
+    const [progress, setProgress] = useState<any>(null)
     const [errors, setErrors] = useState(0)
 
     const toolbarOptions = [
@@ -55,7 +55,6 @@ export default function SendEmail({recipients}:{recipients:string[]}) {
         setErrors(0); // Reset error messages
 
         try {
-
             const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/sendmails`, {
                 method: 'POST',
                 headers: {
@@ -100,7 +99,9 @@ export default function SendEmail({recipients}:{recipients:string[]}) {
                 console.error('Error receiving SSE messages');
                 eventSource.close();
             };
+            setProgress(null)
         } catch (error) {
+            setProgress(null)
             console.error("Error sending emails:", error);
             toast("Error sending emails. Please try again.");
         }
@@ -133,7 +134,7 @@ export default function SendEmail({recipients}:{recipients:string[]}) {
                     Email {recipients.length} contacts
                 </DialogTitle>
             </DialogHeader>
-            {progress > 0 && <ProgressBar progress={progress} total={recipients.length} errors={errors} />}
+            {progress !=null && <ProgressBar progress={progress} total={recipients.length} errors={errors} />}
             <div>
                 <div className="my-2 flex gap-2 items-center whitespace-nowrap">Subject :
                     <Input value={subject} onChange={e=>setSubject(e.target.value)} placeholder="Enter subject"/>

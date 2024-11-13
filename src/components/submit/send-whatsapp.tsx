@@ -38,7 +38,7 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
     const setStep = useSetAtom(stepAtom)
     const method = useAtomValue(methodAtom)
 
-    const [progress, setProgress] = useState(0)
+    const [progress, setProgress] = useState<any>(null)
     const [errors, setErrors] = useState<any>([])
 
     const form = useForm<formType>({
@@ -181,12 +181,15 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
     }
 
     async function onSubmit(data: formType) {
+        setProgress(0)
+
         try {
             if (data.header === 'image') {
                 data.image = await uploadImage(data.image!)
             }
         } catch (error) {
             alert('Error uploading image')
+            setProgress(null)
             return
         }
 
@@ -198,14 +201,14 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
             } catch (error: any) {
                 setErrors((prev: any) => [...prev, { number: numbers[i], error: error }])
             }
-            setProgress(prev => prev + 1)
+            setProgress((prev:any) => prev + 1)
         }
 
         if (errors.length > 0) {
             downloadErrorsAsJSON(errors);
         }
 
-        setProgress(0)
+        setProgress(null)
         toast.success('Operation successfull!!')
     }
 
@@ -234,7 +237,7 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
                     Whatsapp Message
                 </DialogTitle>
             </DialogHeader>
-            {progress > 0 && <ProgressBar progress={progress} total={numbers.length} errors={errors.length} />}
+            {progress !=null && <ProgressBar progress={progress} total={numbers.length} errors={errors.length} />}
             <ScrollArea className="max-h-[70vh]">
                 <div className="flex flex-col md:flex-row gap-2">
                     <div className="md:w-1/2">
