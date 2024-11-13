@@ -86,7 +86,7 @@ export default function SendEmail({recipients}:{recipients:string[]}) {
                     setProgress(data.successCount);
                     setErrors(data.errorCount)
                 } else if (data.status === 'completed') {
-                    setProgress(0)
+                    setProgress(null)
                     if(data.errorLog.length>0){
                         downloadErrorsAsJSON(data.errorLog)
                     }

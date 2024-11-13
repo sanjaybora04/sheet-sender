@@ -182,6 +182,7 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
 
     async function onSubmit(data: formType) {
         setProgress(0)
+        setErrors([])
 
         try {
             if (data.header === 'image') {
@@ -193,8 +194,6 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
             return
         }
 
-        setProgress(0)
-        setErrors([])
         for (let i = 0; i < numbers.length; i++) {
             try {
                 await sendMessage(data, numbers[i])
