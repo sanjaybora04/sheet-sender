@@ -37,7 +37,7 @@ export default function Sheets() {
           toast.error('Unable to fetch data',{id})
         }
         setHeaders(data.values[0])
-        setRows(data.values.filter((_:any, index:any) => index >= 3).map((v: any) => {
+        setRows(data.values.filter((_:any, index:any) => index >= 1).map((v: any) => {
           return data.values[0].reduce((obj: any, header: any, i: number) => {
             obj[header] = v[i];
             return obj;
