@@ -62,7 +62,7 @@ function matchFilter(row: any, filterValue: any, d: any) {
 }
 
 function searchFilter(row: any, filterValue: any, d: any) {
-    return (row.original[d].toLowerCase()?.includes?.(filterValue.toLowerCase()) || false)
+    return (row.original[d]?.toLowerCase()?.includes?.(filterValue?.toLowerCase()) || false)
 }
 
 
