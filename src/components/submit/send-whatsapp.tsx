@@ -14,6 +14,7 @@ import axios from "axios";
 import { DialogHeader, DialogTitle } from "../ui/dialog";
 import { useAtomValue, useSetAtom } from "jotai";
 import { methodAtom, stepAtom } from ".";
+import { toast } from "sonner";
 
 
 const formSchema = z.object({
@@ -37,7 +38,7 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
     const setStep = useSetAtom(stepAtom)
     const method = useAtomValue(methodAtom)
 
-    const [progress, setProgress] = useState(0)
+    const [progress, setProgress] = useState<any>(null)
     const [errors, setErrors] = useState<any>([])
 
     const form = useForm<formType>({
@@ -170,7 +171,8 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
         return
     }
 
-    // async function sendTestMessage(data: formType, number: string) {
+    // Send Test Message
+    // async function sendMessage(data: formType, number: string) {
     //     await new Promise(resolve => setTimeout(resolve, 5));
     //     if (Math.random() < 0.1) {
     //         throw {error: 'Test error'};
@@ -179,31 +181,34 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
     // }
 
     async function onSubmit(data: formType) {
+        setProgress(0)
+        setErrors([])
+
         try {
             if (data.header === 'image') {
                 data.image = await uploadImage(data.image!)
             }
         } catch (error) {
             alert('Error uploading image')
+            setProgress(null)
             return
         }
 
-        setProgress(0)
-        setErrors([])
         for (let i = 0; i < numbers.length; i++) {
             try {
                 await sendMessage(data, numbers[i])
             } catch (error: any) {
                 setErrors((prev: any) => [...prev, { number: numbers[i], error: error }])
             }
-            setProgress(prev => prev + 1)
+            setProgress((prev:any) => prev + 1)
         }
 
         if (errors.length > 0) {
             downloadErrorsAsJSON(errors);
         }
 
-        setProgress(0)
+        setProgress(null)
+        toast.success('Operation successfull!!')
     }
 
     function downloadErrorsAsJSON(errors: any[]) {
@@ -231,7 +236,7 @@ export default function SendWhatsapp({numbers}:{numbers:string[]}) {
                     Whatsapp Message
                 </DialogTitle>
             </DialogHeader>
-            {progress > 0 && <ProgressBar progress={progress} numbers={numbers} errors={errors} />}
+            {progress !=null && <ProgressBar progress={progress} total={numbers.length} errors={errors.length} />}
             <ScrollArea className="max-h-[70vh]">
                 <div className="flex flex-col md:flex-row gap-2">
                     <div className="md:w-1/2">
