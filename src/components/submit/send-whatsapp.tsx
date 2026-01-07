@@ -16,6 +16,7 @@ export default function SendWhatsapp({ numbers }: { numbers: string[] }) {
 
     const [progress, setProgress] = useState<any>(null)
     const [errors, setErrors] = useState<any>([])
+    const [templateName, setTemplateName] = useState("");
 
     const [image, setImage] = useState<any>('')
 
@@ -64,12 +65,16 @@ export default function SendWhatsapp({ numbers }: { numbers: string[] }) {
 
     async function sendMessage(number: string) {
 
+        const toNumber = number.startsWith("91") ? number : `91${number}`;
+
+        const mediaId = await uploadImage(image);
+
         let query: any = {
             messaging_product: "whatsapp",
-            to: `${number}`,
+            to: toNumber,
             type: "template",
             template: {
-                name: `29_dec_2025`,
+                name: templateName,
                 language: {
                     code: "en"
                 },
@@ -80,7 +85,7 @@ export default function SendWhatsapp({ numbers }: { numbers: string[] }) {
                             {
                                 type: "image",
                                 image: {
-                                    id: '1309699074174648'
+                                    id: mediaId
                                 }
                             }
                         ]
@@ -89,7 +94,7 @@ export default function SendWhatsapp({ numbers }: { numbers: string[] }) {
             }
         }
 
-        const res = await axios.post(`https://graph.facebook.com/v21.0/${method.numberId}/messages`,
+        const res = await axios.post(`https://graph.facebook.com/v22.0/${method.numberId}/messages`,
             query,
             {
                 headers: {
@@ -97,6 +102,9 @@ export default function SendWhatsapp({ numbers }: { numbers: string[] }) {
                 }
             }
         )
+        
+        console.log(res.data);
+
         if (res.status == 200) {
             console.log('Message Sent', res.data)
         }
@@ -109,6 +117,16 @@ export default function SendWhatsapp({ numbers }: { numbers: string[] }) {
     async function onSubmit() {
         // console.log(await uploadImage(image))
         // return
+        if (!image) {
+            toast.error("Please upload image first");
+            return;
+        }
+
+        if (!templateName) {
+            toast.error("Please enter template name");
+            return;
+        }
+
         try {
             setProgress(0)
             setErrors([])
@@ -176,6 +194,13 @@ export default function SendWhatsapp({ numbers }: { numbers: string[] }) {
                         }
                     }}
                 />
+                {image && (
+                <Input
+                    placeholder="Enter approved template name"
+                    value={templateName}
+                    onChange={(e) => setTemplateName(e.target.value)}
+                />
+                )}
                 <div className="flex items-center justify-between min-w-64">
                     <Button onClick={() => onSubmit()}>Send</Button>
                     <div>Cost: ₹{Math.floor(numbers.length * 0.7846)}(approx)</div>

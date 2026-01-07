@@ -41,7 +41,10 @@ export default function Submit({ table }: { table: Table<any> }){
                 <DialogTrigger asChild>
                     <Button className="p-2"><ArrowRight></ArrowRight></Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-max">
+                <DialogContent className="max-w-max"
+                    onInteractOutside={(e) => e.preventDefault()}
+                    onEscapeKeyDown={(e) => e.preventDefault()}
+                >
                     {stepComponent}
                 </DialogContent>
             </Dialog>
