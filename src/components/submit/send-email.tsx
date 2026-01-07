@@ -143,7 +143,7 @@ export default function SendEmail({recipients}:{recipients:string[]}) {
                     modules={{
                         toolbar: toolbarOptions
                     }}
-                    className="max-h-[50vh] overflow-y-scroll"
+                    className="max-h-[60vh] overflow-y-scroll"
                 />
                 <div className="flex justify-between mt-2">
                     <Button className="p-2" onClick={()=>setStep(2)}>
